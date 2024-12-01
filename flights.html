@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <!-- Main heading for the flights page -->
+        <h1 class="mb-4">Active Flights</h1>
+        
+        <!-- Responsive table to display flight information -->
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <!-- Table header -->
+                <thead>
+                    <tr>
+                        <th>Flight No</th>
+                        <th>Departure</th>
+                        <th>Arrival</th>
+                        <th>Departure Time</th>
+                        <th>Arrival Time</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <!-- Table body with flight data -->
+                <tbody>
+                    {% for flight in flights %}
+                    <tr>
+                        <td>{{ flight.flight_number }}</td>
+                        <td>{{ flight.departure }}</td>
+                        <td>{{ flight.arrival }}</td>
+                        <!-- Format time to show only hours and minutes -->
+                        <td>{{ flight.departure_time.strftime('%H:%M') }}</td>
+                        <td>{{ flight.arrival_time.strftime('%H:%M') }}</td>
+                        <!-- Status badge with dynamic styling -->
+                        <td>
+                            <span class="flight-status status-{{ flight.status.lower().replace(' ', '') }}">
+                                {{ flight.status }}
+                            </span>
+                        </td>
+                        <!-- Link to detailed flight information -->
+                        <td>
+                            <a href="{{ url_for('flight_detail', id=flight.id) }}" 
+                               class="btn btn-sm btn-primary">Details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Additional information section -->
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Flight Status Information</h5>
+                    <p class="card-text">
+                        <span class="badge bg-success">On Time</span> - Flight is operating as scheduled<br>
+                        <span class="badge bg-warning text-dark">Delayed</span> - Flight is experiencing delays<br>
+                        <span class="badge bg-info">Scheduled</span> - Flight is scheduled for departure<br>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

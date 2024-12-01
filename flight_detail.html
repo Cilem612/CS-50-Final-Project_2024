@@ -1,0 +1,340 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container fade-in">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Main Flight Card -->
+            <div class="card main-flight-card mb-4">
+                <!-- Header with Flight Number and Status -->
+                <div class="card-header bg-gradient text-white p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-0">
+                                <i class="fas fa-plane me-2"></i>Flight #{{ flight.flight_number }}
+                            </h2>
+                            <p class="mb-0 mt-2 text-light">
+                                <i class="fas fa-calendar me-2"></i>{{ flight.departure_time.strftime('%d %B %Y') }}
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <span class="flight-status-large status-{{ flight.status.lower().replace(' ', '') }}">
+                                <i class="fas fa-circle me-2"></i>{{ flight.status }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Flight Route Timeline -->
+                    <div class="flight-timeline mb-5">
+                        <div class="row justify-content-between align-items-center">
+                            <!-- Departure -->
+                            <div class="col-md-5 text-center timeline-point">
+                                <div class="route-card departure">
+                                    <i class="fas fa-plane-departure mb-3" style="font-size: 2.5rem; color: #007bff;"></i>
+                                    <h3>{{ flight.departure }}</h3>
+                                    <div class="time-badge">
+                                        {{ flight.departure_time.strftime('%H:%M') }}
+                                    </div>
+                                    <p class="text-muted mb-0">Departure</p>
+                                </div>
+                            </div>
+
+                            <!-- Flight Path -->
+                            <div class="col-md-2 text-center">
+                                <div class="flight-path">
+                                    <div class="progress-wrapper">
+                                        <div class="progress" style="height: 4px;">
+                                            {% set progress = ((now - flight.departure_time).total_seconds() / 
+                                                            (flight.arrival_time - flight.departure_time).total_seconds() * 100)|round %}
+                                            {% if progress < 0 %}{% set progress = 0 %}
+                                            {% elif progress > 100 %}{% set progress = 100 %}{% endif %}
+                                            <div class="progress-bar progress-bar-animated" 
+                                                 role="progressbar" 
+                                                 style="width:progress"></div>
+                                        </div>
+                                        <i class="fas fa-plane position-absolute" 
+                                           style="font-size: 24px; color: #007bff; left:progress"></i>
+                                    </div>
+                                    <div class="flight-duration mt-2">
+                                        {% set duration = (flight.arrival_time - flight.departure_time) %}
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-clock me-1"></i>
+                                            {{ (duration.total_seconds() / 3600)|round(1) }} hours
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Arrival -->
+                            <div class="col-md-5 text-center timeline-point">
+                                <div class="route-card arrival">
+                                    <i class="fas fa-plane-arrival mb-3" style="font-size: 2.5rem; color: #28a745;"></i>
+                                    <h3>{{ flight.arrival }}</h3>
+                                    <div class="time-badge">
+                                        {{ flight.arrival_time.strftime('%H:%M') }}
+                                    </div>
+                                    <p class="text-muted mb-0">Arrival</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flight Information Cards -->
+                    <div class="row">
+                        <!-- Flight Details -->
+                        <div class="col-md-6 mb-4">
+                            <div class="info-panel">
+                                <h4 class="panel-title">
+                                    <i class="fas fa-info-circle text-primary me-2"></i>Flight Details
+                                </h4>
+                                <div class="panel-content">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Aircraft</span>
+                                        <span class="detail-value">{{ ['Boeing 777-300ER', 'Airbus A350-900', 'Boeing 787-9', 'Airbus A330-300']|random }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Flight Time</span>
+                                        <span class="detail-value">{{ (duration.total_seconds() / 3600)|round(1) }} hours</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Distance</span>
+                                        <span class="detail-value">{{ range(1500, 4000)|random }} km</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Flight Type</span>
+                                        <span class="detail-value">International</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Services -->
+                        <div class="col-md-6 mb-4">
+                            <div class="info-panel">
+                                <h4 class="panel-title">
+                                    <i class="fas fa-concierge-bell text-primary me-2"></i>Services
+                                </h4>
+                                <div class="panel-content">
+                                    <div class="services-grid">
+                                        <div class="service-item">
+                                            <i class="fas fa-utensils service-icon"></i>
+                                            <span>Meals</span>
+                                        </div>
+                                        <div class="service-item">
+                                            <i class="fas fa-wifi service-icon"></i>
+                                            <span>Wi-Fi</span>
+                                        </div>
+                                        <div class="service-item">
+                                            <i class="fas fa-tv service-icon"></i>
+                                            <span>Entertainment</span>
+                                        </div>
+                                        <div class="service-item">
+                                            <i class="fas fa-suitcase service-icon"></i>
+                                            <span>23kg Baggage</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Travel Class Information -->
+                    <div class="travel-classes mt-4">
+                        <h4 class="mb-4">
+                            <i class="fas fa-chair text-primary me-2"></i>Available Classes
+                        </h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="class-card economy">
+                                    <div class="class-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <div class="class-info">
+                                        <h5>Economy Class</h5>
+                                        <p class="mb-0">Standard seating with full service</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="class-card business">
+                                    <div class="class-icon">
+                                        <i class="fas fa-user-tie"></i>
+                                    </div>
+                                    <div class="class-info">
+                                        <h5>Business Class</h5>
+                                        <p class="mb-0">Premium service with extra comfort</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mb-5">
+                <a href="{{ url_for('flights') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-arrow-left me-2"></i>Back to All Flights
+                </a>
+                <button class="btn btn-outline-primary btn-lg" onclick="window.print()">
+                    <i class="fas fa-print me-2"></i>Print Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Custom styles for flight detail page */
+.main-flight-card {
+    border: none;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    border-radius: 15px;
+}
+
+.card-header.bg-gradient {
+    background: linear-gradient(45deg, #007bff, #00bfff);
+    border-radius: 15px 15px 0 0;
+}
+
+.flight-status-large {
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.route-card {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: transform 0.3s ease;
+}
+
+.route-card:hover {
+    transform: translateY(-5px);
+}
+
+.time-badge {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #007bff;
+    margin: 10px 0;
+}
+
+.flight-path {
+    position: relative;
+    padding: 20px 0;
+}
+
+.progress-wrapper {
+    position: relative;
+    margin: 40px 0;
+}
+
+.progress-wrapper .fa-plane {
+    transform: translate(-50%, -50%) rotate(90deg);
+    top: 50%;
+    transition: left 0.6s ease;
+}
+
+.info-panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    height: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.panel-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.detail-label {
+    color: #666;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #333;
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.service-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.service-icon {
+    font-size: 1.2rem;
+    color: #007bff;
+}
+
+.class-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    background: #f8f9fa;
+    transition: transform 0.3s ease;
+}
+
+.class-card:hover {
+    transform: translateY(-3px);
+}
+
+.class-icon {
+    font-size: 2rem;
+    color: #007bff;
+}
+
+.class-info h5 {
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.class-info p {
+    color: #666;
+}
+
+@media print {
+    .btn, .navbar {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    
+    .card-header {
+        background: #f8f9fa !important;
+        color: #333 !important;
+    }
+}
+</style>
+{% endblock %}
